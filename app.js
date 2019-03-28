@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const mongoose = require('mongoose')
 const keys =require('./keys')
+const postRouter = require('./routes/post')
 
 const app = express()
 const clientpath = path.join(__dirname , 'client')
@@ -16,7 +17,8 @@ mongoose.connect(keys.mongoURI ,  { useNewUrlParser: true })
     })
 
 
-app.use(express.static(clientpath))
+    app.use('/api/post', postRouter)
+    app.use(express.static(clientpath))
 
 
 const port = process.env.port || 5000
