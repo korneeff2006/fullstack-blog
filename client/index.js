@@ -15,16 +15,32 @@ const card = (post) => {
 `
 }
 
-let posts = []
-const BASE_URL = 'api/post'
+let posts = [] 
+let modal
+const BASE_URL = '/api/post'
 
 class PostApi {
     static fetch() {
-        return fetch(BASE_URL, { method : 'get'}).then((res) => {
+        return fetch(BASE_URL, { method : 'get'})
+        .then((res) => {
+            res.json()
+                        })
+        .catch(console.error('no data'))
+     
+    }
+
+    static create(post) {
+        return fetch(BASE_URL , {
+            method: 'post' , 
+            body: JSON.stringify(post),
+            headers: {
+                'Accept' : 'application/json',
+                'Content-Type' : 'application/json'
+            }
+
+        }).then( (res) => {
             res.json()
         })
-
-
     }
 }
 
@@ -35,12 +51,13 @@ document.addEventListener('DOMContentLoaded' , () => {
         }
         else { posts = backendPosts.concat() 
         }
-        setTimeout(() => {
-            renderPosts(posts)
-        } , 2000)    
-        
-              
+        renderPosts(posts)    
+                  
     })
+
+    modal = M.Modal.init(document.querySelector('.modal'))
+    document.querySelector('#createPost').addEventListener('click' , onCreatePost)
+
 })
 
 function renderPosts(_posts = []){
@@ -56,4 +73,26 @@ function renderPosts(_posts = []){
     else {
         $posts.innerHTML =  `<div class = "center" > Постов пока нет </div>`
     }
+}
+
+function onCreatePost(){
+    console.log('creation post')
+    const $title = document.querySelector('#title')
+    const $text = document.querySelector('#text')
+
+    if ($title.value && $text.value){
+        var newPost = {
+            title: $title.value,
+            text: $text.value
+        }
+    }
+    PostApi.create(newPost).then( (post) => {
+        posts.push(post)
+        renderPosts(posts)
+
+    })
+    modal.close()
+    $title.value = ''
+    $text.value = ''
+    M.updateTextFields()
 }

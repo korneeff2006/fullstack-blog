@@ -3,6 +3,7 @@ const path = require('path')
 const mongoose = require('mongoose')
 const keys =require('./keys')
 const postRouter = require('./routes/post')
+const bodyParser =require('body-parser')
 
 const app = express()
 const clientpath = path.join(__dirname , 'client')
@@ -16,9 +17,9 @@ mongoose.connect(keys.mongoURI ,  { useNewUrlParser: true })
         console.error(err)
     })
 
-
-    app.use('/api/post', postRouter)
-    app.use(express.static(clientpath))
+app.use(bodyParser.json())
+app.use('/api/post', postRouter)
+app.use(express.static(clientpath))
 
 
 const port = process.env.port || 5000

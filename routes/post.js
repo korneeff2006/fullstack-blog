@@ -7,7 +7,9 @@ const Post = require('../model/Post')
 router.get('/' , async (req , res) => {
     
     const posts = await Post.find({})
+    console.log(posts)
     res.status(200).json(posts)
+    
 
 })
 
