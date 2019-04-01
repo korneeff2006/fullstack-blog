@@ -7,8 +7,9 @@ const Post = require('../model/Post')
 router.get('/' , async (req , res) => {
     
     const posts = await Post.find({})
-    console.log(posts)
-    res.status(200).json(posts)
+    
+    
+    return res.status(200).json(posts)
     
 
 })
@@ -23,7 +24,7 @@ router.post('/' , async (req , res) => {
     const post = new Post(postData)
 
     await post.save()
-    res.status(201).json(post)
+    return res.status(201).json(post)
 
 })
 
@@ -31,7 +32,7 @@ router.post('/' , async (req , res) => {
 router.delete('/:id' , async (req , res) => {
 
     await Post.remove({_id: req.params.id})
-    res.status(200).json({message : 'удалено'})
+    return res.status(200).json({message : 'удалено'})
 
 
 })

@@ -3,12 +3,12 @@ const card = (post) => {
     <div class="card-content">
             
         <span class="card-title"> ${post.title} </span>
-        <p> ${post.text} </p>
-        <small> ${post.date} </small>
+        <p style = "white-space : pre-line;"> ${post.text} </p>
+        <small> ${new Date(post.date).toLocaleDateString()} </small>
     </div>
     <div class="card-action">
-        <button class="btn btn-small pink">
-            <i class="material-icons">delete</i>
+        <button class="btn btn-small pink js-remove" data-id = ${post._id}>
+            <i class="material-icons js-remove" data-id = ${post._id}>delete</i>
         </button>        
     </div>
 </div>
@@ -23,10 +23,9 @@ class PostApi {
     static fetch() {
         return fetch(BASE_URL, { method : 'get'})
         .then((res) => {
-            res.json()
+            return res.json()
                         })
-        .catch(console.error('no data'))
-     
+       // .catch(console.error('not received'))
     }
 
     static create(post) {
@@ -39,8 +38,14 @@ class PostApi {
             }
 
         }).then( (res) => {
-            res.json()
+            return res.json()
         })
+    }
+
+    static remove(id) {
+        return fetch(`${BASE_URL}/${id}` , { method : 'delete' })
+        
+        .then( (res) => {return res.json()} )
     }
 }
 
@@ -57,18 +62,25 @@ document.addEventListener('DOMContentLoaded' , () => {
 
     modal = M.Modal.init(document.querySelector('.modal'))
     document.querySelector('#createPost').addEventListener('click' , onCreatePost)
+    document.querySelector('#posts').addEventListener('click' , onDeletePost)
 
 })
 
 function renderPosts(_posts = []){
     const $posts = document.querySelector('#posts')
     
+    
     if (_posts.length > 0 ) {
         
+        let postsString = ''
         
-        $posts.innerHTML = _posts.map((post) => {
-            card(post).join(' ')
-        })
+        _posts.forEach(post => {
+            postsString += card(post) + ' '
+        });
+
+        $posts.innerHTML = postsString
+       
+       
     }
     else {
         $posts.innerHTML =  `<div class = "center" > Постов пока нет </div>`
@@ -96,3 +108,28 @@ function onCreatePost(){
     $text.value = ''
     M.updateTextFields()
 }
+
+function onDeletePost(event){
+    console.log(event)
+    if (event.target.classList.contains('js-remove')) {
+        const decision = confirm('Вы уверены, что хотите удалить пост?')
+
+        if (decision) {
+            const id = event.target.getAttribute('data-id')
+            //console.log(id)
+            PostApi.remove(id)
+                .then(() => {
+                    const postIndex = posts.find((post) => { post._id === id })
+                        
+                        posts.splice(postIndex , 1)
+                        renderPosts(posts)
+                    
+                })
+
+
+        }
+
+         
+    }
+
+}   
